@@ -2,11 +2,14 @@ from environment import CliffBoxPushingBase
 from collections import defaultdict
 import numpy as np
 import random
+import math
+
+import matplotlib.pyplot as plt
 
 class QAgent(object):
     def __init__(self):
         self.action_space = [1,2,3,4]
-#         self.V = []
+        self.V = np.full((6, 14), -math.inf)
         self.Q = defaultdict(lambda: np.zeros(len(self.action_space)))
         self.discount_factor=0.99
         self.alpha=0.5
@@ -22,8 +25,21 @@ class QAgent(object):
     # implement your train/update function to update self.V or self.Q
     # you should pass arguments to the train function
     def train(self, state, action, next_state, reward):
-        pass
+        self.Q[state][self.action_space.index(action)] += self.alpha * (reward + self.discount_factor * self.Q[next_state][np.argmax(self.Q[next_state])] - self.Q[state][self.action_space.index(action)])
+        
+        
 
+def plot_episode_rewards(episode_rewards, img_save_path):
+    plt.cla()
+    plt.scatter([x for x in range(len(episode_rewards))], episode_rewards, color = 'g', alpha = 0.1)
+    
+    plt.plot([x for x in range(len(episode_rewards))], [sum(episode_rewards[:(x+1)])/(x+1) for x in range(len(episode_rewards))], color = 'r', alpha = 0.7)
+    
+    plt.plot([x for x in range(len(episode_rewards)) if x > 0 and x % 100 == 0], [sum(episode_rewards[x-100:x])/100 for x in range(len(episode_rewards)) if x > 0 and x % 100 == 0], color = 'b', alpha = 0.7)
+    
+    plt.savefig(img_save_path)
+    plt.cla()
+    
 
 if __name__ == '__main__':
     env = CliffBoxPushingBase()
@@ -32,20 +48,47 @@ if __name__ == '__main__':
     teminated = False
     rewards = []
     time_step = 0
-    num_iterations = 1000
+    num_iterations = 5000
+    
+    episode_rewards = []
+    
     for i in range(num_iterations):
         env.reset()
         while not teminated:
             state = env.get_state()
             action = agent.take_action(state)
-    #         print(action)
+            # print(action)
             reward, teminated, _ = env.step([action])
             next_state = env.get_state()
             rewards.append(reward)
-        #     print(f'step: {time_step}, actions: {action}, reward: {reward}')
+            # print(f'step: {time_step}, actions: {action}, reward: {reward}')
             time_step += 1
             agent.train(state, action, next_state, reward)
         print(f'rewards: {sum(rewards)}')
-    #     print(f'print the historical actions: {env.episode_actions}')
+        # print(f'print the historical actions: {env.episode_actions}')
+        
+        episode_rewards.append(sum(rewards))
+        
         teminated = False
         rewards = []
+    
+    plot_episode_rewards(episode_rewards, "episode_rewards.png")
+    '''
+    # V table
+    test_step = 0
+    env.reset()
+    while not teminated:
+        state = env.get_state()
+        action = agent.action_space[np.argmax(agent.Q[state])]
+        print(action)
+        reward, teminated, _ = env.step([action])
+        next_state = env.get_state()
+        rewards.append(reward)
+        print(f'step: {test_step}, actions: {action}, reward: {reward}')
+        test_step += 1
+        
+        agent.V[state[0][0],state[0][1]] = max(agent.Q[state]) if agent.V[state[0][0],state[0][1]] < max(agent.Q[state]) else agent.V[state[0][0],state[0][1]]
+        
+    print(f'rewards: {sum(rewards)}')
+    print(np.around(agent.V, decimals=1))
+    '''

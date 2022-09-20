@@ -15,6 +15,7 @@ if __name__ == '__main__':
     rewards = []
     try:
         while not teminated:
+            # print(env.get_state())
             action = [int(v) for v in \
                 input("Please input the actions (up: 1, down: 2, left: 3, right: 4): ").split()]
             
