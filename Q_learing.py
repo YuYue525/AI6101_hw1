@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 class QAgent(object):
     def __init__(self):
         self.action_space = [1,2,3,4]
-        self.V = np.full((6, 14), -math.inf)
+        # self.V = np.full((6, 14), -math.inf)
         self.Q = defaultdict(lambda: np.zeros(len(self.action_space)))
         self.discount_factor=0.99
         self.alpha=0.5
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     teminated = False
     rewards = []
     time_step = 0
-    num_iterations = 5000
+    num_iterations = 10000
     
     episode_rewards = []
     
@@ -73,22 +73,28 @@ if __name__ == '__main__':
         rewards = []
     
     plot_episode_rewards(episode_rewards, "episode_rewards.png")
-    '''
-    # V table
+    print(agent.Q[((5, 0), (4, 1))])
+    
+    # Q table
+    f = open("test_log.txt", "w")
     test_step = 0
     env.reset()
     while not teminated:
         state = env.get_state()
         action = agent.action_space[np.argmax(agent.Q[state])]
-        print(action)
+        # print(action)
         reward, teminated, _ = env.step([action])
         next_state = env.get_state()
         rewards.append(reward)
-        print(f'step: {test_step}, actions: {action}, reward: {reward}')
+        print(f'step: {test_step}, state: {state}, Q: {agent.Q[state]}, actions: {action}, next state: {next_state}, reward: {reward}')
+        f.write(f'step: {test_step}, state: {state}, Q: {agent.Q[state]}, actions: {action}, next state: {next_state}, reward: {reward}\n')
         test_step += 1
         
-        agent.V[state[0][0],state[0][1]] = max(agent.Q[state]) if agent.V[state[0][0],state[0][1]] < max(agent.Q[state]) else agent.V[state[0][0],state[0][1]]
-        
     print(f'rewards: {sum(rewards)}')
-    print(np.around(agent.V, decimals=1))
-    '''
+    print(f'print the historical actions: {env.episode_actions}')
+    f.write(f'\nrewards: {sum(rewards)}\n')
+    f.write(f'print the historical actions: {env.episode_actions}\n')
+    f.close()
+    
+    
+    
