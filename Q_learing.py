@@ -73,9 +73,9 @@ if __name__ == '__main__':
         rewards = []
     
     plot_episode_rewards(episode_rewards, "episode_rewards.png")
-    print(agent.Q[((5, 0), (4, 1))])
+    # print(agent.Q[((5, 0), (4, 1))])
     
-    # Q table
+    # Q table testing
     f = open("test_log.txt", "w")
     test_step = 0
     env.reset()
@@ -95,6 +95,4 @@ if __name__ == '__main__':
     f.write(f'\nrewards: {sum(rewards)}\n')
     f.write(f'print the historical actions: {env.episode_actions}\n')
     f.close()
-    
-    
-    
+        

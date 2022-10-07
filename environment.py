@@ -77,6 +77,7 @@ class CliffBoxPushingBase:
         |_4_|___|_B_|___|_x_|___|___|___|___|___|_x_|___|___|_x_|_G_|
         |_5_|_A_|___|___|_x_|___|___|___|___|___|_x_|___|___|_x_|___|
         """
+        
         self.world_width = world_width
         self.world_height = world_height
         self.reward_offcliff = reward_offcliff
